@@ -4,9 +4,16 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define BKGD_PIN PA0
 #define RESET_PIN PA1
+
+#define HIGH true
+#define LOW false
+
+typedef bool pinState;
+
 
 void serial_init(void);
 int serial_send( char data, FILE *stream);
@@ -18,8 +25,11 @@ void set_RESET_high(void);
 void set_BKGD_low(void);
 void set_BKGD_high(void);
 void configure_BKGD_input(void);
+void configure_BKGD_output(void);
+pinState get_pin_state(uint8_t pin);
 
 void enter_background(void);
+void Sync_Command(void);
 
 static FILE out_stream = FDEV_SETUP_STREAM(serial_send, NULL, _FDEV_SETUP_WRITE);
 
@@ -36,8 +46,25 @@ int main(void)
     enter_background();
     printf("\n\rPres enter to generate sync");
     waitEnter();
+    Sync_Command();
 
     return 0;
+}
+
+void Sync_Command(void)
+{
+  configure_BKGD_output();
+  set_BKGD_low();
+  _delay_us(50);
+  set_BKGD_high();
+  configure_BKGD_input();
+  //wait for falling slope
+  while(get_pin_state(BKGD_PIN) == HIGH){}
+  uint16_t falling = 0;
+  while(get_pin_state(BKGD_PIN)== LOW){}
+  uint16_t rising = 1;
+  uint16_t sync_time = rising-falling;
+  printf("\nSync time: %d us", sync_time);
 }
 
 void enter_background(void)
@@ -64,6 +91,19 @@ void waitEnter(void)
     }
 }
 
+pinState get_pin_state(uint8_t pin)
+{
+    uint8_t state = PINA & (1 << pin);
+    if(state)
+    {
+        return HIGH;
+    }
+    else
+    {
+        return LOW;
+    }
+}
+
 void set_RESET_low(void)
 {
     PORTA &= ~(1 << RESET_PIN);
@@ -86,6 +126,11 @@ void set_BKGD_high(void)
 void configure_BKGD_input(void)
 {
       DDRA &= ~(1<<BKGD_PIN);
+}
+
+void configure_BKGD_output(void)
+{
+      DDRA |= (1<<BKGD_PIN);
 }
 
 void serial_init(void)
