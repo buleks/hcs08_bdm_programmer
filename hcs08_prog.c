@@ -55,15 +55,32 @@ void Sync_Command(void)
 {
   configure_BKGD_output();
   set_BKGD_low();
-  _delay_us(50);
+  _delay_us(50); //should take at least 128 BDM cycles of target MCU
   set_BKGD_high();
   configure_BKGD_input();
   //wait for falling slope
-  while(get_pin_state(BKGD_PIN) == HIGH){}
-  uint16_t falling = 0;
-  while(get_pin_state(BKGD_PIN)== LOW){}
-  uint16_t rising = 1;
-  uint16_t sync_time = rising-falling;
+  uint16_t wait_counter = 0;
+  while(get_pin_state(BKGD_PIN) == HIGH)
+  {
+    wait_counter++;
+    _delay_us(1);
+    if(wait_counter > 1000)
+    {
+        printf("\n\rSync timeout. BKGD Pin state not changed. Target not responding.\n\rPress reset button.");
+        while(1){}
+    }
+  }
+  uint16_t sync_time = 0;
+  while(get_pin_state(BKGD_PIN)== LOW)
+  {
+    sync_time++;
+    _delay_us(1);
+    if(sync_time > 1000)
+    {
+        printf("\n\rSync timeout. Press reset button.");
+        while(1){}
+    }
+  }
   printf("\nSync time: %d us", sync_time);
 }
 
