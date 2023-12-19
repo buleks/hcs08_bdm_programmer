@@ -5,36 +5,87 @@
 #include <util/delay.h>
 #include <stdio.h>
 
+#define BKGD_PIN PA0
+#define RESET_PIN PA1
+
 void serial_init(void);
 int serial_send( char data, FILE *stream);
 uint8_t serial_receive(void);
+void waitEnter(void);
+
+void set_RESET_low(void);
+void set_RESET_high(void);
+void set_BKGD_low(void);
+void set_BKGD_high(void);
+void configure_BKGD_input(void);
+
+void enter_background(void);
 
 static FILE out_stream = FDEV_SETUP_STREAM(serial_send, NULL, _FDEV_SETUP_WRITE);
 
 int main(void)
 {
+    DDRA = (1<<BKGD_PIN) | (1<<RESET_PIN);
+    PORTA = 0;
+    set_RESET_low();
+    set_BKGD_low();
+
     serial_init();
     stdout = &out_stream;
 
-    printf("\n\r Counting started to 10");    
-    for(int i = 0; i < 10; i++)
-    {      
-        printf("\n\r<%d>Hello!", i);
-        _delay_ms(1000);
-    }
+    enter_background();
+    printf("\n\rPres enter to generate sync");
+    waitEnter();
 
-    printf("\n\rPress enter");
+    return 0;
+}
+
+void enter_background(void)
+{
+    set_RESET_low();
+    printf("\n\rReset supply and press enter");
+    waitEnter();
+    set_RESET_high();
+    _delay_us(10);
+    set_BKGD_high();
+    configure_BKGD_input();
+    printf("\n\rTarget should be in background mode");
+}
+
+void waitEnter(void)
+{
     while(1)
     {
         char c = serial_receive();
-        printf("\n\r char: %x", c);
         if(c == '\r')
         {
-            printf("\n\rEnter pressed");
+            break;
         }
     }
+}
 
-    return 0;
+void set_RESET_low(void)
+{
+    PORTA &= ~(1 << RESET_PIN);
+}
+
+void set_RESET_high(void)
+{
+    PORTA |= (1 << RESET_PIN);
+}
+
+void set_BKGD_low(void)
+{
+    PORTA &= ~(1 << BKGD_PIN);
+}
+void set_BKGD_high(void)
+{
+    PORTA |= (1 << BKGD_PIN);
+}
+
+void configure_BKGD_input(void)
+{
+      DDRA &= ~(1<<BKGD_PIN);
 }
 
 void serial_init(void)

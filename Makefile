@@ -5,9 +5,9 @@
 # (GNU make, BSD make, SysV make)
 
 
-MCU = atmega168
+MCU = atmega2560
 FORMAT = ihex
-TARGET = pal_line
+TARGET = hcs08_prog
 SRC = hcs08_prog.c
 ASRC = 
 OPT = s
@@ -35,7 +35,8 @@ CINCS =
 
 
 CDEBUG = -g$(DEBUG)
-CWARN = -Wall -Wstrict-prototypes -D F_CPU=16000000UL
+#  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105523 pagesize must be 0
+CWARN = -Wall -Wstrict-prototypes -D F_CPU=16000000UL  --param=min-pagesize=0
 CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CEXTRA)
@@ -82,8 +83,8 @@ LDFLAGS = $(EXTMEMOPTS) $(LDMAP) $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 # Programming support using avrdude. Settings and variables.
 
-AVRDUDE_PROGRAMMER = arduino
-AVRDUDE_PORT = /dev/ttyUSB0
+AVRDUDE_PROGRAMMER = wiring
+AVRDUDE_PORT = /dev/ttyACM0
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -103,7 +104,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-AVRDUDE_BASIC = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 19200 -v
+AVRDUDE_BASIC = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 115200 -v -D
 AVRDUDE_FLAGS = $(AVRDUDE_BASIC) $(AVRDUDE_NO_VERIFY) $(AVRDUDE_VERBOSE) $(AVRDUDE_ERASE_COUNTER)
 
 
@@ -185,7 +186,7 @@ extcoff: $(TARGET).elf
 # Link: create ELF output file from object files.
 $(TARGET).elf: $(OBJ)
 	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
-	avr-size -C --mcu=atmega168 $(TARGET).elf
+	avr-size -C --mcu=atmega2560 $(TARGET).elf
 
 # Compile: create object files from C source files.
 .c.o:
