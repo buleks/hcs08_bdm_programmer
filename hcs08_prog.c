@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define BKGD_PIN PA0
-#define RESET_PIN PA1
+#define BKGD_PIN PF0 // Arduino A0
+#define RESET_PIN PF1 //Arduino A1
 
 #define HIGH true
 #define LOW false
@@ -35,8 +35,8 @@ static FILE out_stream = FDEV_SETUP_STREAM(serial_send, NULL, _FDEV_SETUP_WRITE)
 
 int main(void)
 {
-    DDRA = (1<<BKGD_PIN) | (1<<RESET_PIN);
-    PORTA = 0;
+    DDRF = (1<<BKGD_PIN) | (1<<RESET_PIN);
+    PORTF = 0;
     set_RESET_low();
     set_BKGD_low();
 
@@ -123,31 +123,31 @@ pinState get_pin_state(uint8_t pin)
 
 void set_RESET_low(void)
 {
-    PORTA &= ~(1 << RESET_PIN);
+    PORTF &= ~(1 << RESET_PIN);
 }
 
 void set_RESET_high(void)
 {
-    PORTA |= (1 << RESET_PIN);
+    PORTF |= (1 << RESET_PIN);
 }
 
 void set_BKGD_low(void)
 {
-    PORTA &= ~(1 << BKGD_PIN);
+    PORTF &= ~(1 << BKGD_PIN);
 }
 void set_BKGD_high(void)
 {
-    PORTA |= (1 << BKGD_PIN);
+    PORTF |= (1 << BKGD_PIN);
 }
 
 void configure_BKGD_input(void)
 {
-      DDRA &= ~(1<<BKGD_PIN);
+      DDRF &= ~(1<<BKGD_PIN);
 }
 
 void configure_BKGD_output(void)
 {
-      DDRA |= (1<<BKGD_PIN);
+      DDRF |= (1<<BKGD_PIN);
 }
 
 void serial_init(void)
