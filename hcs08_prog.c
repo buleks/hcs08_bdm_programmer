@@ -47,6 +47,7 @@ int main(void)
     printf("\n\rPres enter to generate sync");
     waitEnter();
     Sync_Command();
+    
 
     return 0;
 }
@@ -60,28 +61,28 @@ void Sync_Command(void)
   configure_BKGD_input();
   //wait for falling slope
   uint16_t wait_counter = 0;
+  //Sync impulse is schort(less than 2us), therefore this code must be kept simple as is.
+  uint8_t timeout1 = 0;
+  uint8_t timeout2 = 0;
   while(get_pin_state(BKGD_PIN) == HIGH)
   {
-    wait_counter++;
-    _delay_us(1);
-    if(wait_counter > 1000)
+    timeout1++;
+    if(timeout1 > 1000)
     {
-        printf("\n\rSync timeout. BKGD Pin state not changed. Target not responding.\n\rPress reset button.");
-        while(1){}
+        printf("Sync rising edge not detected. Reset and try again.");
+        while(true){}
     }
   }
-  uint16_t sync_time = 0;
   while(get_pin_state(BKGD_PIN)== LOW)
   {
-    sync_time++;
-    _delay_us(1);
-    if(sync_time > 1000)
+    timeout2++;
+    if(timeout2 > 1000)
     {
-        printf("\n\rSync timeout. Press reset button.");
-        while(1){}
+        printf("Sync falling edge not detected. Reset and try again.");
+        while(true){}
     }
   }
-  printf("\nSync time: %d us", sync_time);
+  printf("\n\rSync received succesfully.");
 }
 
 void enter_background(void)
@@ -106,11 +107,12 @@ void waitEnter(void)
             break;
         }
     }
+    printf("\n\rEnter pressed");
 }
 
-pinState get_pin_state(uint8_t pin)
+inline pinState get_pin_state(uint8_t pin)
 {
-    uint8_t state = PINA & (1 << pin);
+    uint8_t state = PINF & (1 << pin);
     if(state)
     {
         return HIGH;
