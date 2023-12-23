@@ -8,6 +8,7 @@
 
 #define BKGD_PIN PF0 // Arduino A0
 #define RESET_PIN PF1 //Arduino A1
+#define TARGET_SUPPLY_PIN PF2 //Arduino A2
 
 #define HIGH true
 #define LOW false
@@ -20,6 +21,7 @@ int serial_send( char data, FILE *stream);
 uint8_t serial_receive(void);
 void waitEnter(void);
 
+void disable_target_supply(bool x);
 void set_RESET_low(void);
 void set_RESET_high(void);
 void set_BKGD_low(void);
@@ -44,10 +46,13 @@ static FILE out_stream = FDEV_SETUP_STREAM(serial_send, NULL, _FDEV_SETUP_WRITE)
 
 int main(void)
 {
-    DDRF = (1<<BKGD_PIN) | (1<<RESET_PIN);
+    DDRF = (1<<BKGD_PIN) | (1<<RESET_PIN) | (1<<TARGET_SUPPLY_PIN);
     PORTF = 0;
     set_RESET_low();
     set_BKGD_low();
+    disable_target_supply(true);
+    _delay_ms(100);
+    disable_target_supply(false);
 
     serial_init();
     stdout = &out_stream;
@@ -576,6 +581,18 @@ inline pinState get_pin_state(uint8_t pin)
     {
         return LOW;
     }
+}
+
+void disable_target_supply(bool x)
+{
+  if(x == true)
+  {
+    PORTF |= (1 << TARGET_SUPPLY_PIN);
+  }
+  else
+  {
+    PORTF &= ~(1 << TARGET_SUPPLY_PIN);
+  }
 }
 
 void set_RESET_low(void)
