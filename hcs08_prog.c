@@ -58,8 +58,6 @@ int main(void)
     stdout = &out_stream;
 
     enter_background();
-    printf("\n\rPres enter to generate sync");
-    waitEnter();
     Sync_Command();
     read_BDCSR();
     show_target_identifier();
@@ -548,8 +546,7 @@ void Sync_Command(void)
 void enter_background(void)
 {
     set_RESET_low();
-    printf("\n\rReset supply and press enter");
-    waitEnter();
+    _delay_ms(10);
     set_RESET_high();
     _delay_us(10);
     set_BKGD_high();
