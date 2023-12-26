@@ -2,10 +2,20 @@ import serial
 from serial.serialutil import SerialException
 
 
-
+def usage():
+    print("usage python hcs08_prog.py params")
+    print("where params:")
 
 if __name__ == '__main__':
     print("HCS08 programmer")
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "ho:v", ["help", "output="])
+    except getopt.GetoptError as err:
+        # print help information and exit:
+        print(err)  # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+
     try:
         serial_handle = serial.Serial(
         port='/dev/ttyACM0',
