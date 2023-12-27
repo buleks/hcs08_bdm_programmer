@@ -1,5 +1,7 @@
 import serial
 from serial.serialutil import SerialException
+import getopt
+import sys
 
 
 def usage():
@@ -8,13 +10,25 @@ def usage():
 
 if __name__ == '__main__':
     print("HCS08 programmer")
+
+
+    erase_action = False
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ho:v", ["help", "output="])
+        opts, args = getopt.getopt(sys.argv[1:], "he", ["help", "erase"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
+
+    for o, a in opts:
+        if o == "-e":
+            erase_action = True
+        elif o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        else:
+            assert False, "unhandled option"
 
     try:
         serial_handle = serial.Serial(
@@ -27,7 +41,7 @@ if __name__ == '__main__':
         )
     except SerialException as e:
         print(e)
-        exit(1)
+        sys.exit(1)
 
     if not serial_handle.is_open:
         print("Port not opened")
@@ -35,5 +49,8 @@ if __name__ == '__main__':
 
     line = serial_handle.read(1000)
     print(line.decode())
+    if erase_action:
+        print("Erasing flash starting.")
+        serial_handle.write(bytes("erase\n", 'utf-8'))
 
     serial_handle.close()
