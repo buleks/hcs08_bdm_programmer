@@ -2,17 +2,25 @@ import serial
 from serial.serialutil import SerialException
 import getopt
 import sys
+from threading import Thread
+import time
 
+stop = False
+
+def read_serial(serial_handle):
+    while stop == False:
+        c = serial_handle.read()
+        print(c.decode(), end='')
 
 def usage():
     print("usage python hcs08_prog.py params")
     print("where params:")
 
+
 if __name__ == '__main__':
     print("HCS08 programmer")
-
-
     erase_action = False
+
     try:
         opts, args = getopt.getopt(sys.argv[1:], "he", ["help", "erase"])
     except getopt.GetoptError as err:
@@ -47,10 +55,14 @@ if __name__ == '__main__':
         print("Port not opened")
         exit(1)
 
-    line = serial_handle.read(1000)
-    print(line.decode())
+    t = Thread(target=read_serial, args=[serial_handle])
+    t.start()
+    time.sleep(3)
     if erase_action:
         print("Erasing flash starting.")
         serial_handle.write(bytes("erase\n", 'utf-8'))
 
+    time.sleep(2)
+    stop = True
+    t.join()
     serial_handle.close()

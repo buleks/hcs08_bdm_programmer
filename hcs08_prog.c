@@ -5,6 +5,7 @@
 #include <util/delay.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define BKGD_PIN PF0 // Arduino A0
 #define RESET_PIN PF1 //Arduino A1
@@ -20,6 +21,7 @@ void serial_init(void);
 int serial_send( char data, FILE *stream);
 uint8_t serial_receive(void);
 void waitEnter(void);
+void wait_command(void);
 
 void disable_target_supply(bool x);
 void set_RESET_low(void);
@@ -31,7 +33,7 @@ void configure_BKGD_output(void);
 pinState get_pin_state(uint8_t pin);
 
 void enter_background(void);
-void Sync_Command(void);
+void sync_command(void);
 
 uint8_t read_BDCSR(void);
 
@@ -64,9 +66,10 @@ int main(void)
     stdout = &out_stream;
 
     enter_background();
-    Sync_Command();
+    sync_command();
     read_BDCSR();
     show_target_identifier();
+    wait_command();
 
     return 0;
 }
@@ -564,7 +567,7 @@ void write_NEXT(uint8_t data)
   DLY
 }
 
-void Sync_Command(void)
+void sync_command(void)
 {
   configure_BKGD_output();
   set_BKGD_low();
@@ -617,6 +620,32 @@ void waitEnter(void)
         }
     }
     printf("\n\rEnter pressed");
+}
+
+void wait_command(void)
+{
+  static char rx_buffer[100];
+  static uint16_t index = 0;
+
+  while(1)
+  {
+      char c = serial_receive();
+      if(c == '\n')
+      {
+        index = 0;
+        if(strcmp("erase", rx_buffer) == 0)
+        {
+          printf("\nErase command");
+        }
+        break;
+      }
+      rx_buffer[index] = c;
+      index++;
+      if(index > 99) 
+      {
+        index = 0;
+      }
+  }
 }
 
 inline pinState get_pin_state(uint8_t pin)
