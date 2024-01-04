@@ -2,6 +2,7 @@
 #include <string.h>
 #include "serial.h"
 #include "cmd.h"
+#include "flash.h"
 
 void waitEnter(void)
 {
@@ -21,6 +22,7 @@ void parse_commands(char *buffer)
     if(strcmp("erase", buffer) == 0)
     {
         printf("\nErase command");
+        flash_mass_erase();
     }
 }
 
