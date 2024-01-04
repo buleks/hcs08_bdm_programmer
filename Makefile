@@ -8,7 +8,7 @@
 MCU = atmega2560
 FORMAT = ihex
 TARGET = hcs08_prog
-SRC = hcs08_prog.c flash.c serial.c bdm.c
+SRC = hcs08_prog.c flash.c serial.c bdm.c ram.c cmd.c
 ASRC = 
 OPT = s
 
