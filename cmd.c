@@ -16,6 +16,14 @@ void waitEnter(void)
     printf("\n\rEnter pressed");
 }
 
+void parse_commands(char *buffer)
+{
+    if(strcmp("erase", buffer) == 0)
+    {
+        printf("\nErase command");
+    }
+}
+
 void wait_command(void)
 {
   static char rx_buffer[100];
@@ -27,10 +35,7 @@ void wait_command(void)
       if(c == '\n')
       {
         index = 0;
-        if(strcmp("erase", rx_buffer) == 0)
-        {
-          printf("\nErase command");
-        }
+        parse_commands(rx_buffer);
         break;
       }
       rx_buffer[index] = c;

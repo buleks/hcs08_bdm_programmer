@@ -59,10 +59,11 @@ if __name__ == '__main__':
     t.start()
     time.sleep(3)
     if erase_action:
-        print("Erasing flash starting.")
+        print("\nErasing flash starting.")
         serial_handle.write(bytes("erase\n", 'utf-8'))
 
     time.sleep(2)
     stop = True
     t.join()
     serial_handle.close()
+    print("\n\r")
