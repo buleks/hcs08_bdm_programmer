@@ -27,8 +27,6 @@ const uint16_t flash_end = 0xFFFF;
 
 void flash_print_content()
 {
-  
-  
   printf("\nFLASH content[8kBytes]:");
   write_HX(flash_start-1);
   uint8_t data;
@@ -94,21 +92,22 @@ static inline void flash_wait_FCBEF(void)
 
 void flash_write_byte(uint16_t adress, uint8_t data)
 {
-   uint8_t fstat = read_BYTE(FSTAT);
-   if(fstat&0x10) //FACCERR set
-   {
-    printf("\nFACCERR set, should be cleared");
-    return;
-   }
+  uint8_t fstat = read_BYTE(FSTAT);
+  if(fstat&0x10) //FACCERR set
+  {
+  printf("\nFACCERR set, should be cleared");
+  return;
+  }
 
-   printf("\nWating FCBEF to be one/ for FLASH buffer to be empty");
-   flash_wait_FCBEF();
+  printf("\nWating FCBEF to be one/ for FLASH buffer to be empty");
+  flash_wait_FCBEF();
+  printf("\nFCBEF cleared. Command successfully executed");
 
-   printf("\nFlash buffer empty.");
-   //Wrtie to flash 
-   write_BYTE(adress, data);
+  printf("\nFlash buffer empty.");
+  //Wrtie to flash 
+  write_BYTE(adress, data);
 
-   write_BYTE(FCMD, 0x20);//BYTE PROGRAM
+  write_BYTE(FCMD, 0x20);//BYTE PROGRAM
 
   write_BYTE(FSTAT,1<<7);//FCBEF set
   flash_wait_FCBEF();

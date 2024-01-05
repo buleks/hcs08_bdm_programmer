@@ -71,16 +71,39 @@ void test_RAM(void)
     RAM_write_values(0xAA);
     if(RAM_check_values(0xAA) == 0)
     {
-    printf("\n\n\033[32mRAM test 0xAA: OK\033[0m");
+        printf("\n\n\033[32mRAM test 0xAA: OK\033[0m");
     }else
     {
-    printf("\n\033[31mRAM test 0xAA: FAILED\033[0m");
+        printf("\n\033[31mRAM test 0xAA: FAILED\033[0m");
     }
   
 }
 
 void test_write_flash(void)
 {
+    uint16_t i=0;
+    uint8_t data = 0;
+    printf("\nSearching for not erased byte in flash");
+    write_HX(flash_start-1);
+    do{
+        data = read_NEXT();
+        printf("\nAddress: %x", flash_start+i-1);
+        i++;
+    } while(data != 0xFF);
+    printf("\nWriting to flash at: %x", flash_start+i-1);
+
     flash_init();
-    flash_write_byte(flash_start,0xAA);
+    flash_write_byte(flash_start+i-1,0xAA);
+
+    write_HX(flash_start+i-1);
+    data = read_NEXT();
+
+    if(data = 0xAA)
+    {
+        printf("\n\n\033[32mFLASH test writing byte 0xAA: OK\033[0m");
+    }
+    else
+    {
+        printf("\n\n\033[31mFLASH test writing byte 0xAA: FAILED\033[0m");
+    }
 }
