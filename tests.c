@@ -50,7 +50,7 @@ void test_HX(void)
 void test_RAM(void)
 {
     printf("\nRAM test starting");
-    write_values_to_RAM(0x00);
+    RAM_write_values(0x00);
     if(RAM_check_values(0x00) == 0)
     {
         printf("\nRAM test 0x00: OK");
@@ -59,7 +59,7 @@ void test_RAM(void)
         printf("\nRAM test 0x00: FAILED");
     }
 
-    write_values_to_RAM(0xFF);
+    RAM_write_values(0xFF);
     if(RAM_check_values(0xFF) == 0)
     {
         printf("\nRAM test 0xFF: OK");
@@ -68,7 +68,7 @@ void test_RAM(void)
         printf("\nRAM test 0xFF: FAILED");
     }
 
-    write_values_to_RAM(0xAA);
+    RAM_write_values(0xAA);
     if(RAM_check_values(0xAA) == 0)
     {
     printf("\nRAM test 0xAA: OK");

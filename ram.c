@@ -3,7 +3,7 @@
 #include "bdm.h"
 #include "ram.h"
 
-void print_RAM(void)
+void RAM_print(void)
 {
   uint16_t ram_start = 0x0080;
   uint16_t ram_end = 0x027F;
@@ -23,7 +23,7 @@ void print_RAM(void)
 
 }
 
-void write_values_to_RAM(uint8_t value)
+void RAM_write_values(uint8_t value)
 {
   uint16_t ram_start = 0x0080;
   uint16_t ram_end = 0x027F;
