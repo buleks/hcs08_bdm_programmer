@@ -27,6 +27,7 @@ void parse_commands(char *buffer)
     {
         printf("\nErase command");
         flash_mass_erase();
+        printf("\nFinished");
     }
     if(strcmp("tests", buffer) == 0)
     {
@@ -34,10 +35,12 @@ void parse_commands(char *buffer)
         test_Accumulator();
         test_HX();
         test_RAM();
+        printf("\nFinished");
     }
     if(strcmp("print_ram", buffer) == 0)
     {
       RAM_print();
+      printf("\nFinished");
     }
 }
 
