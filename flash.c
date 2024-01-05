@@ -170,7 +170,8 @@ void flash_unsecure(void)
   }
     
    //NVOPT so SEC01:SEC00 = 1:0
-  write_BYTE(NVOPT,0b10);//unsecure mode
+  flash_write_byte(NVOPT,0b10);//unsecure mode
+  flash_read_FOPT_register();
 }
 
 void flash_mass_erase(void)
