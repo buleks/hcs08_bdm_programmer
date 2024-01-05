@@ -25,7 +25,7 @@
 const uint16_t flash_start = 0xE000;
 const uint16_t flash_end = 0xFFFF;
 
-void flash_read_print()
+void flash_print_content()
 {
   
   

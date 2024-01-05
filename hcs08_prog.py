@@ -23,9 +23,10 @@ def usage():
     print("usage python hcs08_prog.py params")
     print("where params:")
     print("help - prints this text")
-    print("erase - erases target mcu flash")
-    print("test - run tests for target mcu and debug interface")
-
+    print("-e --erase - erases target mcu flash")
+    print("-t --test - run tests for target mcu and debug interface")
+    print("--ram - prints target ram content")
+    print("--flash - prints target flash content")
 
 if __name__ == '__main__':
     print("HCS08 programmer")
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     print_ram_action = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram"])
+        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram", "flash"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -48,6 +49,8 @@ if __name__ == '__main__':
             tests_action = True
         elif o == "--ram":
             print_ram_action = True
+        elif o == "--flash":
+            print_flash_action = True
         elif o in ("-h", "--help"):
             usage()
             sys.exit()
@@ -85,6 +88,9 @@ if __name__ == '__main__':
 
     if print_ram_action:
         serial_handle.write(bytes("print_ram\n", 'utf-8'))
+
+    if print_flash_action:
+        serial_handle.write(bytes("print_flash\n", 'utf-8'))
 
     t.join()
     serial_handle.close()

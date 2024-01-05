@@ -43,6 +43,12 @@ void parse_commands(char *buffer)
       RAM_print();
       printf("\nFinished");
     }
+    if(strcmp("print_flash", buffer) == 0)
+    {
+      printf("\nprint_flash command starting");
+      flash_print_content();
+      printf("\nFinished");
+    }
 }
 
 void wait_command(void)

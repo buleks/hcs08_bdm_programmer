@@ -6,6 +6,6 @@ void flash_write_byte(uint16_t adress, uint8_t data);
 void flash_init(void);
 void flash_print_FSTAT(void);
 void flash_print_FOPT(void);
-void flash_read_print(void);
+void flash_print_content(void);
 
 #endif
