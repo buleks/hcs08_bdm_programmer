@@ -53,6 +53,17 @@ uint8_t read_SRS_register(void)
     return data;
 }
 
+uint8_t read_FCDIV_register(void)
+{
+    const uint16_t FCDIV_address = 0x1800;
+    uint8_t data = read_BYTE(FCDIV_address);
+    printf("\nFCDIV Flash Clock Divider Register: 0x%x", data);
+    printf("\nDIVLD=%d", (data&0x80)>>7);
+    printf("|PRDIV8=%d", (data&0x40)>>6);
+    printf("|DIV=%d", (data&0x3f));
+    return data;
+}
+
 void target_soft_reset(void)
 {
     const uint16_t SBDFR_address = 0x1801;
@@ -89,5 +100,6 @@ void show_target_identifier(void)
         printf("\n\rDevice: Unknown");
     }
     read_SRS_register();
-    test_Accumulator();
+    read_FCDIV_register();
+    flash_read_FOPT_register();
 }

@@ -26,7 +26,7 @@ void parse_commands(char *buffer)
     if(strcmp("erase", buffer) == 0)
     {
         printf("\nErase command");
-         flash_init();
+        flash_init();
         flash_mass_erase();
         printf("\nFinished");
     }

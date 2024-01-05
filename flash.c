@@ -7,16 +7,18 @@
 /////////////////////////////////////////////////////////////
 ///////////////////////FLASH/////////////////////////////////
 /////////////////////////////////////////////////////////////
-#define FCDIV 0x1820
-#define FOPT  0x1821
+const uint16_t FCDIV=0x1820;
+const uint16_t FOPT=0x1821;
+
 //0x1823-FCNFG
 //0x1824-FPROT
-#define FSTAT 0x1825
+const uint16_t FSTAT=0x1825;
 #define BIT_FCBEF 7
 #define BIT_FCCF 6
 #define BIT_FPVIOL 5
 #define BIT_FACERR 4
-#define FCMD  0x1826
+const uint16_t FCMD =0x1826;
+const uint16_t NVOPT = 0xFFBF;
 
 //Tutaj trzeba wyczyscic bity SEC01 i SEC00 na 1:0 aby podczas resetu nie włączało się zabezpieczenie flasha i RAMU
 //choć nie wiem czy to konieczne  bo nie robie debugera
@@ -134,6 +136,42 @@ void flash_write_byte(uint16_t adress, uint8_t data)
  //NOP to 0x9D
 }
 
+void flash_read_FSTAT(void)
+{
+  uint8_t data = read_BYTE(FSTAT);
+  printf("\nFSTAT Flash Status Register: %x", data);
+  printf("\nFCBEF=%d", (data&0x80)>>7);
+  printf("|FCCF=%d", (data&0x40)>>6);
+  printf("|FPVIOL=%d", (data&0x20)>>5);
+  printf("|FACERR=%d", (data&0x10)>>4);
+  printf("|0=%d", (data&0x08)>>3);
+  printf("|FBLANK=%d", (data&0x04)>>2);
+  printf("|0=%d", (data&0x02)>>1);
+  printf("|0=%d", (data&0x01));
+}
+
+void flash_unsecure(void)
+{
+  flash_wait_FCBEF(); //wait for buffer empty flag
+  write_BYTE(FCMD, 0x05);//blank check
+  write_BYTE(FSTAT,1<<7);//FCBEF set
+  flash_wait_FCBEF();
+  uint8_t fstat = read_BYTE(FSTAT);
+  if(fstat&0x04) //FBLANK set
+  {
+    printf("\nBlank page check completed");
+  }
+  else
+  {
+    printf("\nBlank check shows that flash is not clear");
+    flash_read_FSTAT();
+    return;
+  }
+    
+   //NVOPT so SEC01:SEC00 = 1:0
+  write_BYTE(NVOPT,0b10);//unsecure mode
+}
+
 void flash_mass_erase(void)
 {
    uint8_t fstat = read_BYTE(FSTAT);
@@ -146,7 +184,7 @@ void flash_mass_erase(void)
    //Wrtie to flash 
    write_BYTE(flash_start, 0x00);
 
-   write_BYTE(FCMD, 0x41);//Mass erase
+  write_BYTE(FCMD, 0x41);//Mass erase
 
   write_BYTE(FSTAT,1<<7);//FCBEF set
   flash_wait_FCBEF();
@@ -170,6 +208,24 @@ void flash_mass_erase(void)
   {
     printf("\nCommand Mass erase in progress");
   }
+  flash_read_FSTAT();
+  flash_unsecure();
+}
+
+uint8_t flash_read_FOPT_register(void)
+{
+    const uint16_t FOPT_address = 0x1821;
+    uint8_t data = read_BYTE(FOPT_address);
+    printf("\nFOPT Flash Option Register: 0x%x", data);
+    printf("\nKEYEN=%d", (data&0x80)>>7);
+    printf("|FNORED=%d", (data&0x40)>>6);
+    printf("|-=%d", (data&0x20)>>5);
+    printf("|-=%d", (data&0x10)>>4);
+    printf("|-=%d", (data&0x08)>>3);
+    printf("|-=%d", (data&0x04)>>2);
+    printf("|SEC01=%d", (data&0x02)>>1);
+    printf("|SEC00=%d", (data&0x01));
+    return data;
 }
 /////////////////////////////////////////////////////////////
 ///////////////////////FLASH/////////////////////////////////
