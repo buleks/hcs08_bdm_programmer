@@ -153,6 +153,7 @@ void flash_read_FSTAT(void)
 void flash_unsecure(void)
 {
   flash_wait_FCBEF(); //wait for buffer empty flag
+  write_BYTE(flash_start, 0x00);
   write_BYTE(FCMD, 0x05);//blank check
   write_BYTE(FSTAT,1<<7);//FCBEF set
   flash_wait_FCBEF();
