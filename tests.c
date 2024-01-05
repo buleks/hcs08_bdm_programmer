@@ -53,28 +53,28 @@ void test_RAM(void)
     RAM_write_values(0x00);
     if(RAM_check_values(0x00) == 0)
     {
-        printf("\nRAM test 0x00: OK");
+        printf("\n\n\033[32mRAM test 0x00: OK\033[0m");
     }else
     {
-        printf("\nRAM test 0x00: FAILED");
+        printf("\n\033[31mRAM test 0x00: FAILED\033[0m");
     }
 
     RAM_write_values(0xFF);
     if(RAM_check_values(0xFF) == 0)
     {
-        printf("\nRAM test 0xFF: OK");
+        printf("\n\n\033[32mRAM test 0xFF: OK\033[0m");
     }else
     {
-        printf("\nRAM test 0xFF: FAILED");
+        printf("\n\033[31mRAM test 0xFF: FAILED\033[0m");
     }
 
     RAM_write_values(0xAA);
     if(RAM_check_values(0xAA) == 0)
     {
-    printf("\nRAM test 0xAA: OK");
+    printf("\n\n\033[32mRAM test 0xAA: OK\033[0m");
     }else
     {
-    printf("\nRAM test 0xAA: FAILED");
+    printf("\n\033[31mRAM test 0xAA: FAILED\033[0m");
     }
   
 }

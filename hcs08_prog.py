@@ -71,6 +71,7 @@ if __name__ == '__main__':
     if tests_action:
         print("\nTarget tests starting.")
         serial_handle.write(bytes("tests\n", 'utf-8'))
+        time.sleep(10)
 
     time.sleep(2)
     stop = True

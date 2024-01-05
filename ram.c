@@ -27,7 +27,7 @@ void RAM_write_values(uint8_t value)
 {
   uint16_t ram_start = 0x0080;
   uint16_t ram_end = 0x027F;
-  printf("\nRAM content[512Bytes]:");
+  RAM_print();
   write_HX(ram_start-1);
   for(uint16_t i = ram_start;i < ram_end;i++)
   {
