@@ -36,6 +36,7 @@ void write_RAM(uint8_t value)
   }
 
 }
+
 uint8_t test_RAM(uint8_t value)
 { 
   uint16_t ram_start = 0x0080;

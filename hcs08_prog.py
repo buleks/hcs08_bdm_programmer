@@ -20,9 +20,10 @@ def usage():
 if __name__ == '__main__':
     print("HCS08 programmer")
     erase_action = False
+    tests_action = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "he", ["help", "erase"])
+        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -32,6 +33,8 @@ if __name__ == '__main__':
     for o, a in opts:
         if o == "-e":
             erase_action = True
+        if o == "-t":
+            tests_action = True
         elif o in ("-h", "--help"):
             usage()
             sys.exit()
@@ -61,6 +64,10 @@ if __name__ == '__main__':
     if erase_action:
         print("\nErasing flash starting.")
         serial_handle.write(bytes("erase\n", 'utf-8'))
+
+    if tests_action:
+        print("\nTarget tests starting.")
+        serial_handle.write(bytes("tests\n", 'utf-8'))
 
     time.sleep(2)
     stop = True

@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "serial.h"
 #include "cmd.h"
 #include "flash.h"
+#include "bdm.h"
+#include "tests.h"
 
 void waitEnter(void)
 {
@@ -23,6 +26,11 @@ void parse_commands(char *buffer)
     {
         printf("\nErase command");
         flash_mass_erase();
+    }
+    if(strcmp("tests", buffer) == 0)
+    {
+        printf("\nTests starting");
+        test_Accumulator();
     }
 }
 
