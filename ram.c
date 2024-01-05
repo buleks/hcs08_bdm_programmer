@@ -3,8 +3,7 @@
 #include "bdm.h"
 #include "ram.h"
 
-
-void read_RAM(void)
+void print_RAM(void)
 {
   uint16_t ram_start = 0x0080;
   uint16_t ram_end = 0x027F;
@@ -24,7 +23,7 @@ void read_RAM(void)
 
 }
 
-void write_RAM(uint8_t value)
+void write_values_to_RAM(uint8_t value)
 {
   uint16_t ram_start = 0x0080;
   uint16_t ram_end = 0x027F;
@@ -37,7 +36,7 @@ void write_RAM(uint8_t value)
 
 }
 
-uint8_t test_RAM(uint8_t value)
+uint8_t RAM_check_values(uint8_t value)
 { 
   uint16_t ram_start = 0x0080;
   uint16_t ram_end = 0x027F;
@@ -53,35 +52,3 @@ uint8_t test_RAM(uint8_t value)
   }
   return 0;
 }
-
-void check_RAM(void)
-{
-  write_RAM(0x00);
-  if(test_RAM(0x00) == 0)
-  {
-    printf("\nRAM test 0x00: OK");
-  }else
-  {
-    printf("\nRAM test 0x00: FAILED");
-  }
-
-  write_RAM(0xFF);
-  if(test_RAM(0xFF) == 0)
-  {
-    printf("\nRAM test 0xFF: OK");
-  }else
-  {
-      printf("\nRAM test 0xFF: FAILED");
-  }
-
-  write_RAM(0xAA);
-  if(test_RAM(0xAA) == 0)
-  {
-    printf("\nRAM test 0xAA: OK");
-  }else
-  {
-    printf("\nRAM test 0xAA: FAILED");
-  }
-  
-}
-

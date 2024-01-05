@@ -15,6 +15,9 @@ def read_serial(serial_handle):
 def usage():
     print("usage python hcs08_prog.py params")
     print("where params:")
+    print("help - prints this text")
+    print("erase - erases target mcu flash")
+    print("test - run tests for target mcu and debug interface")
 
 
 if __name__ == '__main__':

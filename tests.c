@@ -4,6 +4,7 @@
 #include "flash.h"
 #include "bdm.h"
 #include "tests.h"
+#include "ram.h"
 
 void test_Accumulator(void)
 {
@@ -45,3 +46,36 @@ void test_HX(void)
         printf("\n\033[31mHX write test FAIL\033[0m");
     }
 }
+
+void test_RAM(void)
+{
+    printf("\nRAM test starting");
+    write_values_to_RAM(0x00);
+    if(RAM_check_values(0x00) == 0)
+    {
+        printf("\nRAM test 0x00: OK");
+    }else
+    {
+        printf("\nRAM test 0x00: FAILED");
+    }
+
+    write_values_to_RAM(0xFF);
+    if(RAM_check_values(0xFF) == 0)
+    {
+        printf("\nRAM test 0xFF: OK");
+    }else
+    {
+        printf("\nRAM test 0xFF: FAILED");
+    }
+
+    write_values_to_RAM(0xAA);
+    if(RAM_check_values(0xAA) == 0)
+    {
+    printf("\nRAM test 0xAA: OK");
+    }else
+    {
+    printf("\nRAM test 0xAA: FAILED");
+    }
+  
+}
+

@@ -32,6 +32,7 @@ void parse_commands(char *buffer)
         printf("\nTests starting");
         test_Accumulator();
         test_HX();
+        test_RAM();
     }
 }
 
