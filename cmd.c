@@ -39,8 +39,8 @@ void parse_commands(char *buffer)
     }
     if(strcmp("print_ram", buffer) == 0)
     {
-      printf("\nprint_ram command received");
-      // RAM_print();
+      printf("\nprint_ram command starting");
+      RAM_print();
       printf("\nFinished");
     }
 }
