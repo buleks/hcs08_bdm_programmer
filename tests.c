@@ -79,3 +79,8 @@ void test_RAM(void)
   
 }
 
+void test_write_flash(void)
+{
+    flash_init();
+    flash_write_byte(flash_start,0xAA);
+}

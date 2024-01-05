@@ -33,6 +33,7 @@ if __name__ == '__main__':
     erase_action = False
     tests_action = False
     print_ram_action = False
+    print_flash_action = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram", "flash"])
