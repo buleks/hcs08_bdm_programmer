@@ -8,9 +8,16 @@ import time
 stop = False
 
 def read_serial(serial_handle):
+    buffer = bytearray()
     while stop == False:
         c = serial_handle.read()
         print(c.decode(), end='')
+        sys.stdout.flush()
+        if c.decode() == '\n':
+            buffer = bytearray()
+        buffer.extend(c)
+        if buffer.decode() == "\nFinished":
+            break
 
 def usage():
     print("usage python hcs08_prog.py params")
@@ -37,14 +44,15 @@ if __name__ == '__main__':
     for o, a in opts:
         if o == "-e":
             erase_action = True
-        if o == "-t":
+        elif o == "-t":
             tests_action = True
-        if o == "--ram":
+        elif o == "--ram":
             print_ram_action = True
         elif o in ("-h", "--help"):
             usage()
             sys.exit()
         else:
+            print(o)
             assert False, "unhandled option"
 
     try:
@@ -74,14 +82,10 @@ if __name__ == '__main__':
     if tests_action:
         print("\nTarget tests starting.")
         serial_handle.write(bytes("tests\n", 'utf-8'))
-        time.sleep(10)
 
     if print_ram_action:
         serial_handle.write(bytes("print_ram\n", 'utf-8'))
-        time.sleep(5)
 
-    time.sleep(2)
-    stop = True
     t.join()
     serial_handle.close()
     print("\n\r")
