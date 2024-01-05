@@ -4,6 +4,7 @@
 #include "flash.h"
 #include "bdm.h"
 #include "tests.h"
+
 void test_Accumulator(void)
 {
   printf("\nAccumulator testing");
@@ -15,11 +16,32 @@ void test_Accumulator(void)
   printf("\nA_new: %x", res);
   if(res == 0xAA)
   {
-    printf("\n\033[32mAcumulator test OK\033[0m");
+    printf("\n\033[32mAcumulator write test OK\033[0m");
   }
   else
   {
-    printf("\n\033[31mAcumulator test FAIL\033[0m");
+    printf("\n\033[31mAcumulator write test FAIL\033[0m");
   }
 
+}
+
+void test_HX(void)
+{
+    printf("\nHX testing");
+    //read_BDCSR();
+    uint16_t res = read_HX();
+    printf("\nHX: %x", res);
+    write_HX(0xAAAA);
+    
+    res = read_HX();
+    printf("\nHX_new: %x", res);
+   
+    if(res == 0xAAAA)
+    {
+        printf("\n\033[32mHX write test OK\033[0m");
+    }
+    else
+    {
+        printf("\n\033[31mHX write test FAIL\033[0m");
+    }
 }

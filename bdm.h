@@ -33,4 +33,7 @@ uint8_t read_NEXT(void);
 void write_HX(uint16_t data);
 void write_NEXT(uint8_t data);
 
+uint8_t read_A(void);
+void write_A(uint8_t data);
+
 #endif
