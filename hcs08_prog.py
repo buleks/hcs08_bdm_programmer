@@ -24,9 +24,10 @@ if __name__ == '__main__':
     print("HCS08 programmer")
     erase_action = False
     tests_action = False
+    print_ram_action = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests"])
+        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -38,6 +39,8 @@ if __name__ == '__main__':
             erase_action = True
         if o == "-t":
             tests_action = True
+        if o == "--ram":
+            print_ram_action = True
         elif o in ("-h", "--help"):
             usage()
             sys.exit()
@@ -72,6 +75,10 @@ if __name__ == '__main__':
         print("\nTarget tests starting.")
         serial_handle.write(bytes("tests\n", 'utf-8'))
         time.sleep(10)
+
+    if print_ram_action:
+        serial_handle.write(bytes("print_ram\n", 'utf-8'))
+        time.sleep(5)
 
     time.sleep(2)
     stop = True

@@ -6,6 +6,7 @@
 #include "flash.h"
 #include "bdm.h"
 #include "tests.h"
+#include "ram.h"
 
 void waitEnter(void)
 {
@@ -33,6 +34,10 @@ void parse_commands(char *buffer)
         test_Accumulator();
         test_HX();
         test_RAM();
+    }
+    if(strcmp("print_ram", buffer) == 0)
+    {
+      RAM_print();
     }
 }
 
