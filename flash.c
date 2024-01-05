@@ -99,10 +99,8 @@ void flash_write_byte(uint16_t adress, uint8_t data)
   return;
   }
 
-  printf("\nWating FCBEF to be one/ for FLASH buffer to be empty");
+  printf("\nWating FCBEF to be one, for FLASH buffer to be empty");
   flash_wait_FCBEF();
-  printf("\nFCBEF cleared. Command successfully executed");
-
   printf("\nFlash buffer empty.");
   //Wrtie to flash 
   write_BYTE(adress, data);

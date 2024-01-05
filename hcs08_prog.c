@@ -37,6 +37,28 @@ int main(void)
     return 0;
 }
 
+uint8_t read_SRS_register(void)
+{
+    const uint16_t SRS_address = 0x1800;
+    uint8_t data = read_BYTE(SRS_address);
+    printf("\nSRS(System Reset Status Register): 0x%x", data);
+    printf("\nPOR=%d", (data&0x80)>>7);
+    printf("|PIN=%d", (data&0x40)>>6);
+    printf("|COP=%d", (data&0x20)>>5);
+    printf("|ILOP=%d", (data&0x10)>>4);
+    printf("|ILAD=%d", (data&0x08)>>3);
+    printf("|0=%d", (data&0x04)>>2);
+    printf("|LVD=%d", (data&0x02)>>1);
+    printf("|0=%d", (data&0x01));
+    return data;
+}
+
+void target_soft_reset(void)
+{
+    const uint16_t SBDFR_address = 0x1801;
+    write_BYTE(SBDFR_address, 0x01);
+}
+
 uint16_t read_target_identifier(void)
 {
   //SDIDH and SDIDL
@@ -45,7 +67,6 @@ uint16_t read_target_identifier(void)
   uint8_t sdil = read_BYTE(0x1807);
   uint16_t result = sdil | sdih<<8;
   return result;
-  
 }
 
 void show_target_identifier(void)
@@ -67,4 +88,6 @@ void show_target_identifier(void)
     {
         printf("\n\rDevice: Unknown");
     }
+    read_SRS_register();
+    test_Accumulator();
 }
