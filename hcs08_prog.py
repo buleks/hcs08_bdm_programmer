@@ -124,9 +124,14 @@ if __name__ == '__main__':
             binary_file.write(flash_dump)
         print("\nFlash written to file flash_dump.bin")
 
+    def wait_OK():
+        while confirmed == False and stop == False:
+                    pass
+
     if write_flash_action:
         print(f"\nWriting flash data from {file_name}")
         serial_handle.write(bytes("write_flash\n", 'utf-8'))
+        wait_OK()
         with open(file_name) as fp:
             count = sum(1 for _ in fp)
             print(f"\nLines to transmit: {count}")
@@ -139,8 +144,7 @@ if __name__ == '__main__':
                 print(f"\nStatus: {line_num}/{count}")
                 line_num += 1
                 serial_handle.write(bytes(line, 'utf-8'))
-                while confirmed == False and stop == False:
-                    pass
+                wait_OK()
         print("\nFile transfer finished")
         stop = True
 
