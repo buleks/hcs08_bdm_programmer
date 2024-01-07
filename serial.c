@@ -27,3 +27,11 @@ int serial_send( char data, FILE *stream)
     UDR0 = data;
     return 0;
 }
+
+void serial_send_buffer(char *buffer, uint8_t len)
+{
+    for(int i = 0; i< len; i++)
+    {
+        serial_send(buffer[i], NULL);
+    }
+}

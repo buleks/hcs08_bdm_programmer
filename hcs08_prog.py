@@ -34,9 +34,10 @@ if __name__ == '__main__':
     tests_action = False
     print_ram_action = False
     print_flash_action = False
+    dump_flash_action = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram", "flash"])
+        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram", "flash", "dump_flash"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -52,6 +53,8 @@ if __name__ == '__main__':
             print_ram_action = True
         elif o == "--flash":
             print_flash_action = True
+        elif o == "--dump_flash":
+            dump_flash_action = True
         elif o in ("-h", "--help"):
             usage()
             sys.exit()
@@ -92,6 +95,16 @@ if __name__ == '__main__':
 
     if print_flash_action:
         serial_handle.write(bytes("print_flash\n", 'utf-8'))
+
+    if dump_flash_action:
+        stop = True
+        t.join()
+        print("\nFlash reading started...")
+        serial_handle.write(bytes("read_flash\n", 'utf-8'))
+        flash_dump = serial_handle.read(size=8192)
+        with open("flash_dump.bin", "wb") as binary_file:
+            binary_file.write(flash_dump)
+        print("\nFlash written to file flash_dump.bin")
 
     t.join()
     serial_handle.close()

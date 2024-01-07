@@ -8,6 +8,8 @@
 #include "tests.h"
 #include "ram.h"
 
+char buffer[16];
+
 void waitEnter(void)
 {
     while(1)
@@ -50,6 +52,19 @@ void parse_commands(char *buffer)
       printf("\nprint_flash command starting");
       flash_print_content();
       printf("\nFinished");
+    }
+    if(strcmp("read_flash", buffer) == 0)
+    {
+        write_HX(flash_start-1);
+
+        for(uint16_t i = 0;i < 8192;i++)
+        {
+          if(i%16 == 0 && i > 1)
+          {
+            serial_send_buffer(buffer, 16);
+          }
+          buffer[i%16] = read_NEXT();
+        }
     }
 }
 
