@@ -72,16 +72,17 @@ void parse_commands(char *buffer)
     if(strcmp("write_flash", buffer) == 0)
     {
       printf("\nwrite_flash command starting");
+      flash_init();
       printf("\nOK");
       while(1)
       {
-        uint8_t len = serial_read_line(line_buffer);
-        serial_send_buffer(line_buffer, len);
+        serial_read_line(line_buffer);
         if(srec_parse_line(line_buffer) < 0)
         {
           printf("\nFAIL");
           break;
         }
+        srec_write_flash();
         printf("\nOK");
       }
     }

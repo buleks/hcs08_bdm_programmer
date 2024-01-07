@@ -4,9 +4,6 @@
 #include "bdm.h"
 #include "flash.h"
 
-/////////////////////////////////////////////////////////////
-///////////////////////FLASH/////////////////////////////////
-/////////////////////////////////////////////////////////////
 const uint16_t FCDIV=0x1820;
 const uint16_t FOPT=0x1821;
 
@@ -26,6 +23,20 @@ const uint16_t NVOPT = 0xFFBF;
 
 const uint16_t flash_start = 0xE000;
 const uint16_t flash_end = 0xFFFF;
+
+const uint8_t ERROR = 0;
+const uint8_t INFO = 1;
+const uint8_t DEBUG = 2;
+
+uint8_t log_level = INFO;
+
+void logger(uint8_t level , char *str)
+{
+  if(level <= log_level)
+  {
+    printf(str);
+  }
+}
 
 void flash_print_content()
 {
@@ -88,7 +99,7 @@ static inline void flash_wait_FCBEF(void)
       _delay_us(27);
      fstat = read_BYTE(FSTAT);
       
-     printf("\nWating FCBEF.");
+     logger(DEBUG,"\nWaiting FCBEF.");
    } while((fstat&0x80) == 0);
 }
 
@@ -97,13 +108,13 @@ void flash_write_byte(uint16_t adress, uint8_t data)
   uint8_t fstat = read_BYTE(FSTAT);
   if(fstat&0x10) //FACCERR set
   {
-  printf("\nFACCERR set, should be cleared");
-  return;
+    printf("\nFACCERR set, should be cleared");
+    return;
   }
 
-  printf("\nWating FCBEF to be one, for FLASH buffer to be empty");
+  logger(DEBUG,"\nWating FCBEF to be one, for FLASH buffer to be empty");
   flash_wait_FCBEF();
-  printf("\nFlash buffer empty.");
+  logger(DEBUG, "\nFlash buffer empty.");
   //Wrtie to flash 
   write_BYTE(adress, data);
 
@@ -126,10 +137,10 @@ void flash_write_byte(uint16_t adress, uint8_t data)
 
   if( fstat&(1<<BIT_FCCF) )
   {
-    printf("\nCommand complete");
+    logger(DEBUG,"\nCommand complete");
   }else
   {
-    printf("\nCommand in progress");
+    logger(DEBUG,"\nCommand in progress");
   }
    
    

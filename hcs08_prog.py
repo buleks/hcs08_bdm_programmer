@@ -145,7 +145,6 @@ if __name__ == '__main__':
                 line_num += 1
                 serial_handle.write(bytes(line, 'utf-8'))
                 wait_OK()
-        print("\nFile transfer finished")
         stop = True
 
     t.join()

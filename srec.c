@@ -3,13 +3,21 @@
 #include <string.h>
 #include <stdint.h>
 #include "srec.h"
+#include "flash.h"
 
 uint8_t srec_data_count = 0;
 uint16_t srec_data_address = 0;
 uint8_t srec_data_decoded[255];
 
 
-
+void srec_write_flash(void)
+{
+    uint16_t address = srec_data_address;
+    for(int i = 0; i < srec_data_count; i++)
+    {
+        flash_write_byte(address+i, srec_data_decoded[i]);
+    }
+}
 
 uint32_t hex2int(char *hex) {
     uint32_t val = 0;
