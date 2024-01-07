@@ -43,7 +43,7 @@ void flash_print_content()
   printf("\nFLASH content[8kBytes]:");
   write_HX(flash_start-1);
   uint8_t data;
-  for(uint16_t i = flash_start;i < flash_end;i++)
+  for(uint16_t i = 0;i < 8192;i++)
   {
     if(i%16 == 0)
     {
@@ -53,9 +53,7 @@ void flash_print_content()
     }
     data = read_NEXT();
     printf("%x ", data);
-   
   }
-
 }
 
 void flash_print_FOPT()
