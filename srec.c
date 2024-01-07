@@ -4,6 +4,12 @@
 #include <stdint.h>
 #include "srec.h"
 
+uint8_t srec_data_count = 0;
+uint16_t srec_data_address = 0;
+uint8_t srec_data_decoded[255];
+
+
+
 
 uint32_t hex2int(char *hex) {
     uint32_t val = 0;
@@ -82,27 +88,32 @@ void srec_parse_header(char *line)
   }
 }
 
+void srec_print_decoded(void)
+{
+    printf("\nData length: %dBytes", srec_data_count);
+    printf("\nAddress: 0x%04X", srec_data_address);
+    printf(" Data: ");
+    for(int i = 0; i < srec_data_count; i++)
+    {
+      printf("0x%02X,",srec_data_decoded[i]);
+    }
+}
+
 void srec_s1_decode(char *line)
 {
     uint8_t count = srec_get_byte_count(line)-3;
-    printf("\nData length: %dBytes",count);
-
+    srec_data_count = count;
     char address16bit[4] = {'0','0','0','0'};
     memcpy(address16bit,&line[4],4);
     uint16_t address = hex2int(address16bit);
-
-    printf("\nAddress: %d(0x%04X)",address,address);
-
+    srec_data_address = address;
     char *data_start = &line[8];
-
-    printf(" Data: ");
-
     for(int i = 0; i < 2*count; i+=2)
     {
       char byte_s[3] = {'A','B',0};
       memcpy(byte_s,data_start+i,2);
       uint8_t hex_val = hex2int(byte_s);
-      printf("0x%02X,",hex_val);
+      srec_data_decoded[i/2]=hex_val;
     }
 }
 
