@@ -98,7 +98,7 @@ void test_write_flash(void)
     write_HX(flash_start+i-1);
     data = read_NEXT();
 
-    if(data = 0xAA)
+    if(data == 0xAA)
     {
         printf("\n\n\033[32mFLASH test writing byte 0xAA: OK\033[0m");
     }

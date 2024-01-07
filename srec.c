@@ -106,19 +106,19 @@ void srec_s1_decode(char *line)
     }
 }
 
-void srec_parse_line(char *line)
+int srec_parse_line(char *line)
 {
-    
-
     //Start record should be present
      if(line[0] != 'S') 
      {
          printf("\nWrong Srec line, not started with S");
-         return ;
+         return -1;
      }
     
-    srec_checksum(line);
-
+    if(srec_checksum(line) < 0)
+    {
+        return -1;
+    }
 
     switch(line[1])
     {
@@ -128,10 +128,7 @@ void srec_parse_line(char *line)
 
         case '9' :  break;
 
-        default: printf("\nNot implemented record type: %c",line[1]); return;
+        default: printf("\nNot implemented record type: %c",line[1]); return -1;
     }
-
-
-
-
+    return 0;
 }
