@@ -133,11 +133,13 @@ if __name__ == '__main__':
             fp.seek(0)
             line_num = 1
             for line in fp:
+                if stop == True:
+                    break
                 confirmed  = False
                 print(f"\nStatus: {line_num}/{count}")
                 line_num += 1
                 serial_handle.write(bytes(line, 'utf-8'))
-                while confirmed == False:
+                while confirmed == False and stop == False:
                     pass
         print("\nFile transfer finished")
         stop = True

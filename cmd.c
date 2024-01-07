@@ -7,6 +7,7 @@
 #include "bdm.h"
 #include "tests.h"
 #include "ram.h"
+#include "srec.h"
 
 char buffer[16];
 char line_buffer[255];
@@ -74,6 +75,7 @@ void parse_commands(char *buffer)
       while(1)
       {
         uint8_t len = serial_read_line(line_buffer);
+        srec_parse_line(line_buffer);
         // serial_send_buffer(line_buffer, len);
         printf("\nOK");
       }
