@@ -27,6 +27,7 @@ def usage():
     print("-t --test - run tests for target mcu and debug interface")
     print("--ram - prints target ram content")
     print("--flash - prints target flash content")
+    print("--write_flash=file - writes srec file, to target flash memory")
 
 if __name__ == '__main__':
     print("HCS08 programmer")
@@ -35,9 +36,11 @@ if __name__ == '__main__':
     print_ram_action = False
     print_flash_action = False
     dump_flash_action = False
+    write_flash_action = False
+    file_name = None
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram", "flash", "dump_flash"])
+        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram", "flash", "dump_flash", "write_flash="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -55,6 +58,9 @@ if __name__ == '__main__':
             print_flash_action = True
         elif o == "--dump_flash":
             dump_flash_action = True
+        elif o == "--write_flash":
+            write_flash_action = True
+            file_name = a
         elif o in ("-h", "--help"):
             usage()
             sys.exit()
@@ -105,6 +111,9 @@ if __name__ == '__main__':
         with open("flash_dump.bin", "wb") as binary_file:
             binary_file.write(flash_dump)
         print("\nFlash written to file flash_dump.bin")
+
+    if write_flash_action:
+        print(f"\nWriting flash data from {file_name}")
 
     t.join()
     serial_handle.close()
