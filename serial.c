@@ -35,3 +35,23 @@ void serial_send_buffer(char *buffer, uint8_t len)
         serial_send(buffer[i], NULL);
     }
 }
+
+uint8_t serial_read_line(char *line_buffer)
+{
+  //Line buffer len=255
+  int i = 0;
+  while(1)
+  {
+      char c = serial_receive();
+      if(c == '\n')
+      {
+          return i;
+      }
+      line_buffer[i] = c;
+      i++;
+      if(i == 255)
+      {
+        printf("\n\033[31mLine buffer is full\033[0m");
+      }
+  }
+}

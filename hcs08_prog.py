@@ -122,6 +122,10 @@ if __name__ == '__main__':
 
     if write_flash_action:
         print(f"\nWriting flash data from {file_name}")
+        serial_handle.write(bytes("write_flash\n", 'utf-8'))
+        with open(file_name) as fp:
+            for line in fp:
+                serial_handle.write(bytes(line, 'utf-8'))
 
     t.join()
     serial_handle.close()

@@ -9,6 +9,7 @@
 #include "ram.h"
 
 char buffer[16];
+char line_buffer[255];
 
 void waitEnter(void)
 {
@@ -65,6 +66,17 @@ void parse_commands(char *buffer)
           }
           buffer[i%16] = read_NEXT();
         }
+    }
+
+    if(strcmp("write_flash", buffer) == 0)
+    {
+      printf("\nwrite_flash command starting");
+      while(1)
+      {
+        uint8_t len = serial_read_line(line_buffer);
+        serial_send_buffer(line_buffer, len);
+        printf("\n");
+      }
     }
 }
 
