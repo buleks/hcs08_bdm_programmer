@@ -74,8 +74,8 @@ void parse_commands(char *buffer)
       while(1)
       {
         uint8_t len = serial_read_line(line_buffer);
-        serial_send_buffer(line_buffer, len);
-        printf("\n");
+        // serial_send_buffer(line_buffer, len);
+        printf("\nOK");
       }
     }
 }

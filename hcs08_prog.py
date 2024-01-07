@@ -7,6 +7,7 @@ import time
 import signal
 
 stop = False
+confirmed = False
 
 def signal_handler(sig, frame):
     global stop
@@ -14,6 +15,7 @@ def signal_handler(sig, frame):
     stop = True
 
 def read_serial(serial_handle):
+    global confirmed
     buffer = bytearray()
     while stop == False:
         c = serial_handle.read()
@@ -24,6 +26,8 @@ def read_serial(serial_handle):
         buffer.extend(c)
         if buffer.decode() == "\nFinished":
             break
+        if buffer.decode() == "\nOK":
+            confirmed = True
 
 def usage():
     print("usage python hcs08_prog.py params")
@@ -124,8 +128,19 @@ if __name__ == '__main__':
         print(f"\nWriting flash data from {file_name}")
         serial_handle.write(bytes("write_flash\n", 'utf-8'))
         with open(file_name) as fp:
+            count = sum(1 for _ in fp)
+            print(f"\nLines to transmit: {count}")
+            fp.seek(0)
+            line_num = 1
             for line in fp:
+                confirmed  = False
+                print(f"\nStatus: {line_num}/{count}")
+                line_num += 1
                 serial_handle.write(bytes(line, 'utf-8'))
+                while confirmed == False:
+                    pass
+        print("\nFile transfer finished")
+        stop = True
 
     t.join()
     serial_handle.close()
