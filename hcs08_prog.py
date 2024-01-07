@@ -4,8 +4,14 @@ import getopt
 import sys
 from threading import Thread
 import time
+import signal
 
 stop = False
+
+def signal_handler(sig, frame):
+    global stop
+    print('You pressed Ctrl+C! Exiting app.')
+    stop = True
 
 def read_serial(serial_handle):
     buffer = bytearray()
@@ -31,6 +37,8 @@ def usage():
 
 if __name__ == '__main__':
     print("HCS08 programmer")
+    signal.signal(signal.SIGINT, signal_handler)
+
     erase_action = False
     tests_action = False
     print_ram_action = False
