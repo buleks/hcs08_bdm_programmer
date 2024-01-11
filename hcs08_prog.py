@@ -194,10 +194,9 @@ if __name__ == '__main__':
                 srec_data[index] = segment.data[i]
                
                 if srec_data[index] != target_flash_data[index]:
-                    print(f"\nVerification failed at: 0x{index:02x} ;{srec_data[i]}; vs ;{target_flash_data[i]};")
-                    print(type(srec_data[index]))
-                    print(type(target_flash_data[index]))
-                    print(segment)
+                    print(f"\nVerification failed at: 0x{(index+flash_start):02x} Srec file: 0x{srec_data[index]:02x} vs Target:0x{target_flash_data[index]:02x}")
+                    if index+flash_start == 0xFFBF:
+                        print("Warning: NVOPT(0xFFBF) non-volatile register differs")
 
     t.join()
     serial_handle.close()

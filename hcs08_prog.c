@@ -99,7 +99,7 @@ void show_target_identifier(void)
     {
         printf("\n\rDevice: Unknown");
     }
-    printf("Target Registers:");
+    printf("\nTarget Registers:");
     read_SRS_register();
     flash_read_FOPT_register();
 }
