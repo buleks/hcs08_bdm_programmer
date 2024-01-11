@@ -128,7 +128,9 @@ if __name__ == '__main__':
     if print_flash_action:
         serial_handle.write(bytes("print_flash\n", 'utf-8'))
 
-    if dump_flash_action:
+
+    def read_flash():
+        global stop_read
         stop_read = True
         t.join()
         print("\nFlash reading started...")
@@ -144,10 +146,15 @@ if __name__ == '__main__':
             flash_data+=bytearray(data)
             print(f"\r{x}/512")
             serial_handle.write(bytes("\nOK", 'utf-8'))
-        print("\nFlash written to file flash_dump.bin")
+        return flash_data
+
+
+    if dump_flash_action:
+        flash_data = read_flash()
      
         with open("flash_dump.bin", "wb") as binary_file:
             binary_file.write(flash_data)
+            print("\nFlash written to file flash_dump.bin")
 
     def wait_OK():
         while confirmed == False and stop_read == False:
