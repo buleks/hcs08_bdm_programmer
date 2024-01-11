@@ -5,6 +5,7 @@ import sys
 from threading import Thread
 import time
 import signal
+import bincopy
 
 stop_read = False
 exit_app = False
@@ -46,6 +47,7 @@ def usage():
     print("--ram - prints target ram content")
     print("--flash - prints target flash content")
     print("--write_flash=file - writes srec file, to target flash memory")
+    print("--verify=file - verify srec with target flash content")
 
 if __name__ == '__main__':
     print("HCS08 programmer")
@@ -57,10 +59,11 @@ if __name__ == '__main__':
     print_flash_action = False
     dump_flash_action = False
     write_flash_action = False
+    verify_action = False
     file_name = None
-
+    
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram", "flash", "dump_flash", "write_flash="])
+        opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram", "flash", "dump_flash", "write_flash=", "verify="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -80,6 +83,9 @@ if __name__ == '__main__':
             dump_flash_action = True
         elif o == "--write_flash":
             write_flash_action = True
+            file_name = a
+        elif o == "--verify":
+            verify_action = True
             file_name = a
         elif o in ("-h", "--help"):
             usage()
@@ -128,16 +134,20 @@ if __name__ == '__main__':
         print("\nFlash reading started...")
         serial_handle.write(bytes("read_flash\n", 'utf-8'))
         serial_handle.timeout = 60
-        with open("flash_dump.bin", "wb") as binary_file:
-            for x in range(512):
-                if exit_app == True:
-                    break
-                flash_dump = serial_handle.read(size=16)
-                binary_file.write(flash_dump)
-                print(f"\r{x}/512")
-                serial_handle.write(bytes("\nOK", 'utf-8'))
-
+        
+        flash_data = bytearray()
+        for x in range(512):
+            if exit_app == True:
+                break
+            data = serial_handle.read(size=16)
+            
+            flash_data+=bytearray(data)
+            print(f"\r{x}/512")
+            serial_handle.write(bytes("\nOK", 'utf-8'))
         print("\nFlash written to file flash_dump.bin")
+     
+        with open("flash_dump.bin", "wb") as binary_file:
+            binary_file.write(flash_data)
 
     def wait_OK():
         while confirmed == False and stop_read == False:
@@ -161,6 +171,11 @@ if __name__ == '__main__':
                 serial_handle.write(bytes(line, 'utf-8'))
                 wait_OK()
         stop_read = True
+
+    if verify_action:
+        f = bincopy.BinFile()
+        f.add_srec_file(file_name, overwrite = True)
+        print(f.as_binary())
 
     t.join()
     serial_handle.close()
