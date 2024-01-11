@@ -25,6 +25,27 @@ void waitEnter(void)
     printf("\n\rEnter pressed");
 }
 
+static void wait_OK(void)
+{
+  int i = 0;
+  char buf[4];
+  buf[3]=0;
+  while(1)
+  {
+      char c = serial_receive();
+      if(c == '\n')
+      {
+        i = 0;
+      }
+      buf[i%3] = c;
+      i++;
+      if(strcmp("\nOK", buf) == 0)
+      {
+        break;
+      }
+  }
+}
+
 void parse_commands(char *buffer)
 {
     if(strcmp("erase", buffer) == 0)
@@ -59,13 +80,15 @@ void parse_commands(char *buffer)
     {
         write_HX(flash_start-1);
 
-        for(uint16_t i = 0;i < 8192;i++)
+        //512*16=8kB
+        for(uint16_t i = 0;i < 512;i++)
         {
-          if(i%16 == 0 && i > 1)
+          for(int x = 0; x < 16; x++) //iterates 0 to 15
           {
-            serial_send_buffer(buffer, 16);
+            buffer[x] = read_NEXT();
           }
-          buffer[i%16] = read_NEXT();
+          serial_send_buffer(buffer, 16);
+          wait_OK();
         }
     }
 

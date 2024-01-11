@@ -6,28 +6,36 @@ from threading import Thread
 import time
 import signal
 
-stop = False
+stop_read = False
+exit_app = False
 confirmed = False
 
+
 def signal_handler(sig, frame):
-    global stop
+    global stop_read
+    global exit_app
     print('You pressed Ctrl+C! Exiting app.')
-    stop = True
+    stop_read = True
+    exit_app = True
 
 def read_serial(serial_handle):
     global confirmed
     buffer = bytearray()
-    while stop == False:
+    while stop_read == False:
         c = serial_handle.read()
-        print(c.decode(), end='')
-        sys.stdout.flush()
-        if c.decode() == '\n':
-            buffer = bytearray()
-        buffer.extend(c)
-        if buffer.decode() == "\nFinished":
-            break
-        if buffer.decode() == "\nOK":
-            confirmed = True
+        try:
+            print(c.decode(), end='')
+            sys.stdout.flush()
+            if c.decode() == '\n':
+                buffer = bytearray()
+            buffer.extend(c)
+            if buffer.decode() == "\nFinished":
+                break
+            if buffer.decode() == "\nOK":
+                confirmed = True
+        except UnicodeDecodeError as e:
+            print(c, end='')
+        
 
 def usage():
     print("usage python hcs08_prog.py params")
@@ -87,7 +95,7 @@ if __name__ == '__main__':
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
         bytesize=serial.EIGHTBITS,
-        timeout=3
+        timeout=1
         )
     except SerialException as e:
         print(e)
@@ -115,17 +123,24 @@ if __name__ == '__main__':
         serial_handle.write(bytes("print_flash\n", 'utf-8'))
 
     if dump_flash_action:
-        stop = True
+        stop_read = True
         t.join()
         print("\nFlash reading started...")
         serial_handle.write(bytes("read_flash\n", 'utf-8'))
-        flash_dump = serial_handle.read(size=8192)
+        serial_handle.timeout = 60
         with open("flash_dump.bin", "wb") as binary_file:
-            binary_file.write(flash_dump)
+            for x in range(512):
+                if exit_app == True:
+                    break
+                flash_dump = serial_handle.read(size=16)
+                binary_file.write(flash_dump)
+                print(f"\r{x}/512")
+                serial_handle.write(bytes("\nOK", 'utf-8'))
+
         print("\nFlash written to file flash_dump.bin")
 
     def wait_OK():
-        while confirmed == False and stop == False:
+        while confirmed == False and stop_read == False:
                     pass
 
     if write_flash_action:
@@ -138,14 +153,14 @@ if __name__ == '__main__':
             fp.seek(0)
             line_num = 1
             for line in fp:
-                if stop == True:
+                if stop_read == True:
                     break
                 confirmed  = False
                 print(f"\nStatus: {line_num}/{count}")
                 line_num += 1
                 serial_handle.write(bytes(line, 'utf-8'))
                 wait_OK()
-        stop = True
+        stop_read = True
 
     t.join()
     serial_handle.close()
