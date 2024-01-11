@@ -19,6 +19,7 @@ def signal_handler(sig, frame):
     stop_read = True
     exit_app = True
 
+
 def read_serial(serial_handle):
     global confirmed
     buffer = bytearray()
@@ -65,8 +66,7 @@ if __name__ == '__main__':
     try:
         opts, args = getopt.getopt(sys.argv[1:], "het", ["help", "erase", "tests", "ram", "flash", "dump_flash", "write_flash=", "verify="])
     except getopt.GetoptError as err:
-        # print help information and exit:
-        print(err)  # will print something like "option -a not recognized"
+        print(err)  
         usage()
         sys.exit(2)
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
             data = serial_handle.read(size=16)
             
             flash_data+=bytearray(data)
-            print(f"\r{x}/512")
+            print(f"\r{x}/512", end='')
             serial_handle.write(bytes("\nOK", 'utf-8'))
         return flash_data
 
@@ -182,7 +182,22 @@ if __name__ == '__main__':
     if verify_action:
         f = bincopy.BinFile()
         f.add_srec_file(file_name, overwrite = True)
-        print(f.as_binary())
+        target_flash_data = read_flash()
+      
+        srec_data = bytearray(b'\xff'*8192)
+        flash_start = 0xE000
+        for segment in f.segments:
+            address = segment.address
+            count = len(segment.data)
+            for i in range(count):
+                index = address - flash_start + i
+                srec_data[index] = segment.data[i]
+               
+                if srec_data[index] != target_flash_data[index]:
+                    print(f"\nVerification failed at: 0x{index:02x} ;{srec_data[i]}; vs ;{target_flash_data[i]};")
+                    print(type(srec_data[index]))
+                    print(type(target_flash_data[index]))
+                    print(segment)
 
     t.join()
     serial_handle.close()
