@@ -1,5 +1,6 @@
 # hcs08_bdm_programmer
 Simple project to make programmer for HCS08 microcontroller using BDM (Background debug mode)interface.
+It had been written for MC9S08SG8, it is tested only with this microcontroller at the moment.
 
 Hardware
 It uses Arduino Mega 2560 board to realise BDM debug interface.
