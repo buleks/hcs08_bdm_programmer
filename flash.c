@@ -8,7 +8,7 @@ const uint16_t FCDIV=0x1820;
 const uint16_t FOPT=0x1821;
 
 //0x1823-FCNFG
-//0x1824-FPROT
+const uint16_t FPROT=0x1824;
 const uint16_t FSTAT=0x1825;
 #define BIT_FCBEF 7
 #define BIT_FCCF 6
@@ -16,7 +16,6 @@ const uint16_t FSTAT=0x1825;
 #define BIT_FACERR 4
 const uint16_t FCMD =0x1826;
 const uint16_t NVOPT = 0xFFBF;
-const uint16_t FPROT = 0x1824;
 
 //Tutaj trzeba wyczyscic bity SEC01 i SEC00 na 1:0 aby podczas resetu nie włączało się zabezpieczenie flasha i RAMU
 //choć nie wiem czy to konieczne  bo nie robie debugera
@@ -211,6 +210,13 @@ void flash_unsecure(void)
   flash_read_FOPT_register();
 }
 
+void unlock_whole_flash(void)
+{
+    uint8_t fpopen_bit = 1<<7;
+    uint8_t fdis_bit = 1<<6;
+    write_BYTE(FPROT, fpopen_bit | fdis_bit);
+}
+
 void flash_mass_erase(void)
 {
   uint8_t fstat = read_BYTE(FSTAT);
@@ -222,6 +228,9 @@ void flash_mass_erase(void)
   flash_wait_FCBEF();
 
   //Disable protections
+  printf("\nDisabling protections");
+  unlock_whole_flash();
+  flash_print_FPROT();
 
   //Wrtie to flash 
   write_BYTE(flash_start, 0x00);
