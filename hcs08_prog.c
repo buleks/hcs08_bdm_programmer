@@ -102,4 +102,5 @@ void show_target_identifier(void)
     printf("\nTarget Registers:");
     read_SRS_register();
     flash_read_FOPT_register();
+    flash_print_FPROT();
 }

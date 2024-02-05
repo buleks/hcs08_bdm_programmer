@@ -16,6 +16,7 @@ const uint16_t FSTAT=0x1825;
 #define BIT_FACERR 4
 const uint16_t FCMD =0x1826;
 const uint16_t NVOPT = 0xFFBF;
+const uint16_t FPROT = 0x1824;
 
 //Tutaj trzeba wyczyscic bity SEC01 i SEC00 na 1:0 aby podczas resetu nie włączało się zabezpieczenie flasha i RAMU
 //choć nie wiem czy to konieczne  bo nie robie debugera
@@ -38,7 +39,7 @@ void logger(uint8_t level , char *str)
   }
 }
 
-void flash_print_content()
+void flash_print_content(void)
 {
   printf("\nFLASH content[8kBytes]:");
   write_HX(flash_start-1);
@@ -56,7 +57,34 @@ void flash_print_content()
   }
 }
 
-void flash_print_FOPT()
+void flash_print_FPROT(void)
+{
+  uint8_t fopt = read_BYTE(FOPT);
+  uint8_t fopen_bit = (fopt&0x80)>>7;
+  uint8_t fdis_bit = (fopt&0x40)>>6;
+  printf("\nFPROT: 0x%x", fopt);
+  printf("\nFPOPEN=%d", fopen_bit);
+  printf("|FDIS=%d", fdis_bit);
+  printf("|FPS2=%d", (fopt&0x20)>>5);
+  printf("|FPS1=%d", (fopt&0x10)>>4);
+  printf("|FPS0=%d", (fopt&0x08)>>3);
+  if(fopen_bit)
+  {
+    printf("\n\033[32mFlash not protected\033[0m");
+  }
+  else 
+  {
+    printf("\n\033[33mWhole flash is protected\033[0m");
+  }
+
+  if(fdis_bit == 0)
+  {
+    printf("\n\033[33mFlash specified blocks are protected\033[0m");
+  }
+}
+
+
+void flash_print_FOPT(void)
 {
   uint8_t fopt = read_BYTE(FOPT);
 
@@ -67,7 +95,7 @@ void flash_print_FOPT()
   printf("|SEC00=%d", (fopt&0x01));
 }
 
-void flash_print_FSTAT()
+void flash_print_FSTAT(void)
 {
   uint8_t fstat = read_BYTE(FSTAT);
   printf("\nFSTAT: 0x%x", fstat);
@@ -78,7 +106,7 @@ void flash_print_FSTAT()
   printf("|FBLANK=%d", (fstat&0x04)>>2);
 }
 
-void flash_init()
+void flash_init(void)
 {
  //set clock by writing FCDIV
  //fFCLK= 4.7MHz/(24+1) = 188khz
@@ -185,15 +213,18 @@ void flash_unsecure(void)
 
 void flash_mass_erase(void)
 {
-   uint8_t fstat = read_BYTE(FSTAT);
-   if(fstat&0x10) //FACCERR set
-   {
+  uint8_t fstat = read_BYTE(FSTAT);
+  if(fstat&0x10) //FACCERR set
+  {
     printf("\nFACCERR set, should be cleared");
     goto flash_mass_erase_exit;
-   }
-   flash_wait_FCBEF();
-   //Wrtie to flash 
-   write_BYTE(flash_start, 0x00);
+  }
+  flash_wait_FCBEF();
+
+  //Disable protections
+
+  //Wrtie to flash 
+  write_BYTE(flash_start, 0x00);
 
   write_BYTE(FCMD, 0x41);//Mass erase
 
