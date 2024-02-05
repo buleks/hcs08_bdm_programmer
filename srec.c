@@ -77,7 +77,7 @@ int srec_checksum(char *line)
 void srec_parse_header(char *line)
 {
   uint8_t count = srec_get_byte_count(line);
-  printf("\n\t Header length: %d(0x%02x)",count, count);
+  printf("\nHeader length: %d(0x%02x)",count, count);
 
   char header_address[4] = {'0','0','0','0'};
   char *address_p = &line[4];

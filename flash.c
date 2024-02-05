@@ -8,7 +8,7 @@ const uint16_t FCDIV=0x1820;
 const uint16_t FOPT=0x1821;
 
 //0x1823-FCNFG
-const uint16_t FPROT=0x1824;
+const uint16_t FPROT=0x1824; //$FFBD in flash
 const uint16_t FSTAT=0x1825;
 #define BIT_FCBEF 7
 #define BIT_FCCF 6
@@ -205,16 +205,17 @@ void flash_unsecure(void)
     return;
   }
     
-   //NVOPT so SEC01:SEC00 = 1:0
-  flash_write_byte(NVOPT,0b10);//unsecure mode
+   //NVOPT so SEC01:SEC00 = 1:0 and KEYEN = 1
+  flash_write_byte(NVOPT,0x42);//unsecure mode
   flash_read_FOPT_register();
 }
 
 void unlock_whole_flash(void)
 {
-    uint8_t fpopen_bit = 1<<7;
-    uint8_t fdis_bit = 1<<6;
-    write_target_BYTE(FPROT, fpopen_bit | fdis_bit);
+    // uint8_t fpopen_bit = 1<<7;
+    // uint8_t fdis_bit = 1<<6;
+    //Works only with 0xFF, setting fpopen and fdis not working
+    write_target_BYTE(FPROT,0xff);
 }
 
 void flash_mass_erase(void)
