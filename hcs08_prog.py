@@ -71,7 +71,7 @@ if __name__ == '__main__':
         sys.exit(2)
 
     for o, a in opts:
-        if o == "-e":
+        if o == "-e" or o == "--erase":
             erase_action = True
         elif o == "-t":
             tests_action = True
@@ -92,7 +92,8 @@ if __name__ == '__main__':
             sys.exit()
         else:
             print(o)
-            assert False, "unhandled option"
+            usage()
+            sys.exit()
 
     try:
         serial_handle = serial.Serial(
