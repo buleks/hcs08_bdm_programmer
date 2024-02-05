@@ -24,7 +24,7 @@ void sync_command(void);
 
 uint8_t read_BDCSR(void);
 
-void write_BYTE(uint16_t addr,uint8_t data);
+void write_target_BYTE(uint16_t addr,uint8_t data);
 uint8_t read_BYTE(uint16_t addr);
 void write_BYTE_WS(uint16_t addr,uint8_t data);
 

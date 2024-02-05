@@ -67,7 +67,7 @@ uint8_t read_FCDIV_register(void)
 void target_soft_reset(void)
 {
     const uint16_t SBDFR_address = 0x1801;
-    write_BYTE(SBDFR_address, 0x01);
+    write_target_BYTE(SBDFR_address, 0x01);
 }
 
 uint16_t read_target_identifier(void)

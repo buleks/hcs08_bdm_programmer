@@ -430,7 +430,7 @@ uint8_t read_BYTE(uint16_t addr)
    return data;
 }
 
-void write_BYTE(uint16_t addr,uint8_t data)
+void write_target_BYTE(uint16_t addr,uint8_t data)
 {
 //   noInterrupts();
   write_byte(0xc0); //write byte to target memory 1100 0000

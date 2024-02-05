@@ -109,7 +109,7 @@ void flash_init(void)
 {
  //set clock by writing FCDIV
  //fFCLK= 4.7MHz/(24+1) = 188khz
- write_BYTE(FCDIV, 24);
+ write_target_BYTE(FCDIV, 24);
  flash_print_FOPT();
  flash_print_FSTAT();
  //NOP to 0x9D
@@ -141,11 +141,11 @@ void flash_write_byte(uint16_t adress, uint8_t data)
   flash_wait_FCBEF();
   logger(DEBUG, "\nFlash buffer empty.");
   //Wrtie to flash 
-  write_BYTE(adress, data);
+  write_target_BYTE(adress, data);
 
-  write_BYTE(FCMD, 0x20);//BYTE PROGRAM
+  write_target_BYTE(FCMD, 0x20);//BYTE PROGRAM
 
-  write_BYTE(FSTAT,1<<7);//FCBEF set
+  write_target_BYTE(FSTAT,1<<7);//FCBEF set
   flash_wait_FCBEF();
 
   fstat = read_BYTE(FSTAT);   
@@ -189,9 +189,9 @@ void flash_read_FSTAT(void)
 void flash_unsecure(void)
 {
   flash_wait_FCBEF(); //wait for buffer empty flag
-  write_BYTE(flash_start, 0x00);
-  write_BYTE(FCMD, 0x05);//blank check
-  write_BYTE(FSTAT,1<<7);//FCBEF set
+  write_target_BYTE(flash_start, 0x00);
+  write_target_BYTE(FCMD, 0x05);//blank check
+  write_target_BYTE(FSTAT,1<<7);//FCBEF set
   flash_wait_FCBEF();
   uint8_t fstat = read_BYTE(FSTAT);
   if(fstat&0x04) //FBLANK set
@@ -214,7 +214,7 @@ void unlock_whole_flash(void)
 {
     uint8_t fpopen_bit = 1<<7;
     uint8_t fdis_bit = 1<<6;
-    write_BYTE(FPROT, fpopen_bit | fdis_bit);
+    write_target_BYTE(FPROT, fpopen_bit | fdis_bit);
 }
 
 void flash_mass_erase(void)
@@ -233,11 +233,11 @@ void flash_mass_erase(void)
   flash_print_FPROT();
 
   //Wrtie to flash 
-  write_BYTE(flash_start, 0x00);
+  write_target_BYTE(flash_start, 0x00);
 
-  write_BYTE(FCMD, 0x41);//Mass erase
+  write_target_BYTE(FCMD, 0x41);//Mass erase
 
-  write_BYTE(FSTAT,1<<7);//FCBEF set
+  write_target_BYTE(FSTAT,1<<7);//FCBEF set
   flash_wait_FCBEF();
 
   fstat = read_BYTE(FSTAT);   
