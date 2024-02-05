@@ -124,7 +124,7 @@ void flash_write_byte(uint16_t adress, uint8_t data)
   fstat = read_BYTE(FSTAT);   
   if( fstat&(1<<BIT_FPVIOL) )
   {
-    printf("\nFPVIOL- access to protected area. Write failed");
+    printf("\n\033[31mFPVIOL bit set - access to protected area. Write failed\033[0m");
     return;
   }
   if( fstat&(1<<BIT_FACERR) )
@@ -189,7 +189,7 @@ void flash_mass_erase(void)
    if(fstat&0x10) //FACCERR set
    {
     printf("\nFACCERR set, should be cleared");
-    return;
+    goto flash_mass_erase_exit;
    }
    flash_wait_FCBEF();
    //Wrtie to flash 
@@ -203,13 +203,13 @@ void flash_mass_erase(void)
   fstat = read_BYTE(FSTAT);   
   if( fstat&(1<<BIT_FPVIOL) )
   {
-    printf("\nFPVIOL- access to protected area. Write failed");
-    return;
+    printf("\n\033[31mFPVIOL bit set- access to protected area. Write failed\033[0m");
+    goto flash_mass_erase_exit;
   }
   if( fstat&(1<<BIT_FACERR) )
   {
     printf("\nFACERR- Error. Write failed");
-    return;
+    goto flash_mass_erase_exit;
   }
 
   if( fstat&(1<<BIT_FCCF) )
@@ -221,6 +221,9 @@ void flash_mass_erase(void)
   }
   flash_read_FSTAT();
   flash_unsecure();
+  return;
+  flash_mass_erase_exit:
+  printf("\n\033[31mFlash not erased\033[0m");
 }
 
 uint8_t flash_read_FOPT_register(void)
