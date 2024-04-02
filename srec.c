@@ -125,6 +125,13 @@ void srec_s1_decode(char *line)
     }
 }
 
+void srec_s5_decode(char *line)
+{
+    uint16_t count = 0;
+    memcpy(&count,&line[0],2);
+    printf("\nS5 Count:%d", count);
+}
+
 int srec_parse_line(char *line)
 {
     //Start record should be present
@@ -144,6 +151,8 @@ int srec_parse_line(char *line)
         case '0' :  printf("\nHeader: "); srec_parse_header(line);break;
 
         case '1' :  srec_s1_decode(line); break;
+
+        case '5' :  srec_s5_decode(line); break;
 
         case '9' :  break;
 
